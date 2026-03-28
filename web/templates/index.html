@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Page Analyzer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Web Page Analyzer</h1>
+        <p class="subtitle">Enter a URL to analyze its structure and content</p>
+
+        <form method="POST" action="/analyze" class="analyze-form">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    name="url" 
+                    placeholder="https://example.com" 
+                    value="{{.URL}}" 
+                    required
+                    autocomplete="url"
+                >
+                <button type="submit">Analyze</button>
+            </div>
+        </form>
+
+        {{if .Error}}
+        <div class="error-card">
+            <h2>Error</h2>
+            {{if .StatusCode}}
+            <div class="status-code">HTTP {{.StatusCode}}</div>
+            {{end}}
+            <p>{{.Error}}</p>
+        </div>
+        {{end}}
+
+        {{if .Result}}
+        <div class="results">
+            <h2>Analysis Results {{if .Result.RenderMode}}<span class="render-badge">{{.Result.RenderMode}}</span>{{end}}</h2>
+
+            <div class="result-card">
+                <h3>HTML Version</h3>
+                <p class="value">{{if .Result.HTMLVersion}}{{.Result.HTMLVersion}}{{else}}Not detected{{end}}</p>
+            </div>
+
+            <div class="result-card">
+                <h3>Page Title</h3>
+                <p class="value">{{if .Result.Title}}{{.Result.Title}}{{else}}No title found{{end}}</p>
+            </div>
+
+            <div class="result-card">
+                <h3>Headings</h3>
+                {{if .Result.Headings}}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Level</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Result.Headings}}
+                        <tr>
+                            <td>{{.Level}}</td>
+                            <td>{{.Count}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+                {{else}}
+                <p class="value">No headings found</p>
+                {{end}}
+            </div>
+
+            <div class="result-card">
+                <h3>Links</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Internal Links</td>
+                            <td>{{.Result.InternalLinks}}</td>
+                        </tr>
+                        <tr>
+                            <td>External Links</td>
+                            <td>{{.Result.ExternalLinks}}</td>
+                        </tr>
+                        <tr class="inaccessible">
+                            <td>Inaccessible Links</td>
+                            <td>{{.Result.InaccessibleLinks}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="result-card">
+                <h3>Login Form</h3>
+                {{if .Result.HasLoginForm}}
+                <p class="value yes">Yes — login form detected</p>
+                {{else}}
+                <p class="value no">No — no login form found</p>
+                {{end}}
+            </div>
+        </div>
+        {{end}}
+    </div>
+</body>
+</html>

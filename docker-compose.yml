@@ -1,0 +1,9 @@
+services:
+  web-analyzer:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+    shm_size: '256m'
+    restart: unless-stopped
